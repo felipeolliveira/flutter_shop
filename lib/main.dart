@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shop/pages/cart_page.dart';
+import 'package:shop/pages/order_page.dart';
 import 'package:shop/pages/product_detail_page.dart';
 import 'package:shop/pages/products_overview_page.dart';
 import 'package:shop/providers/cart.dart';
@@ -37,7 +38,10 @@ class MyApp extends StatelessWidget {
           appBarTheme: AppBarTheme(
             backwardsCompatibility: false,
             backgroundColor: Colors.deepPurple,
-            systemOverlayStyle: SystemUiOverlayStyle.light,
+            systemOverlayStyle: SystemUiOverlayStyle(
+              statusBarIconBrightness: Brightness.dark,
+              statusBarColor: Colors.deepPurple,
+            ),
           ),
           pageTransitionsTheme: PageTransitionsTheme(
             builders: {
@@ -49,6 +53,7 @@ class MyApp extends StatelessWidget {
           AppRoutes.PRODUCT_OVERVIEW: (context) => ProductsOverviewPage(),
           AppRoutes.PRODUCT_DETAILS: (context) => ProductDetailPage(),
           AppRoutes.CART: (context) => CartPage(),
+          AppRoutes.ORDER: (context) => OrderPage(),
         },
       ),
     );
