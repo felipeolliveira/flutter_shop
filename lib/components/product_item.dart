@@ -1,0 +1,73 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop/providers/product.dart';
+import 'package:shop/providers/cart.dart';
+import 'package:shop/routes/app_routes.dart';
+
+class ProductItem extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final Product product = Provider.of<Product>(context, listen: false);
+    final CartProvider cart = Provider.of<CartProvider>(context, listen: false);
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: GridTile(
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.network(
+                product.imageUrl,
+                fit: BoxFit.cover,
+              ),
+            ),
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  highlightColor:
+                      Theme.of(context).accentColor.withOpacity(0.1),
+                  splashColor: Theme.of(context).accentColor.withOpacity(0.3),
+                  borderRadius: BorderRadius.circular(10),
+                  onTap: () {
+                    Navigator.of(context).pushNamed(AppRoutes.PRODUCT_DETAILS,
+                        arguments: product);
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+        footer: GridTileBar(
+          backgroundColor: Colors.black87,
+          leading: Consumer<Product>(
+            builder: (context, product, _child) {
+              return IconButton(
+                icon: Icon(
+                  product.isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                ),
+                color: Theme.of(context).accentColor,
+                onPressed: () {
+                  product.toogleFavorite();
+                },
+              );
+            },
+          ),
+          title: Text(
+            product.title,
+            textAlign: TextAlign.center,
+          ),
+          trailing: IconButton(
+            icon: Icon(Icons.shopping_cart_outlined),
+            color: Theme.of(context).accentColor,
+            onPressed: () {
+              cart.addItemInCart(product);
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
