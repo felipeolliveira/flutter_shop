@@ -3,11 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:shop/components/cart_page_item.dart';
 import 'package:shop/providers/cart.dart';
 import 'package:shop/providers/order.dart';
+import 'package:shop/routes/app_routes.dart';
 
 class CartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context);
     final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
 
     final cartItems = cartProvider.items.values.toList();
@@ -15,6 +16,14 @@ class CartPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Carrinho'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.payment_rounded),
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed(AppRoutes.ORDER);
+            },
+          ),
+        ],
       ),
       bottomSheet: Card(
         elevation: 5,
@@ -56,13 +65,11 @@ class CartPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Consumer<CartProvider>(
-        builder: (context, cartProvider, child) => ListView.builder(
-          itemCount: cartProvider.itemCount,
-          itemBuilder: (context, index) {
-            return CartPageItem(cartItems[index]);
-          },
-        ),
+      body: ListView.builder(
+        itemCount: cartProvider.itemCount,
+        itemBuilder: (context, index) {
+          return CartPageItem(cartItems[index]);
+        },
       ),
     );
   }

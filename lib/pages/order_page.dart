@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:shop/components/app_drawer.dart';
 import 'package:shop/components/order_item.dart';
 import 'package:shop/providers/order.dart';
+import 'package:shop/routes/app_routes.dart';
 
 class OrderPage extends StatelessWidget {
   @override
@@ -13,6 +14,15 @@ class OrderPage extends StatelessWidget {
         drawer: AppDrawer(),
         appBar: AppBar(
           title: Text('Pedidos'),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.shopping_bag_outlined),
+              onPressed: () {
+                Navigator.of(context)
+                    .pushReplacementNamed(AppRoutes.PRODUCT_OVERVIEW);
+              },
+            ),
+          ],
         ),
         body: ListView.builder(
           itemCount: orders.itemsAmout,

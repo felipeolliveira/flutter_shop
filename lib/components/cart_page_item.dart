@@ -10,8 +10,31 @@ class CartPageItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dismissible(
-      key: ValueKey(cartItem.id),
+      key: Key(cartItem.productId),
       direction: DismissDirection.startToEnd,
+      confirmDismiss: (_) => showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Deseja excluir esse item do carrinho?"),
+            content: Text("Confirme se estiver certeza da exclusão do item."),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: Text('Não'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: Text('Sim'),
+              ),
+            ],
+          );
+        },
+      ),
       onDismissed: (_) {
         Provider.of<CartProvider>(context, listen: false)
             .removeItemInCart(cartItem.productId);

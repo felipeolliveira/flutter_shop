@@ -29,17 +29,6 @@ class AppDrawer extends StatelessWidget {
             centerTitle: true,
             automaticallyImplyLeading: false,
           ),
-          // DrawerHeader(
-          //   decoration: BoxDecoration(color: Theme.of(context).primaryColor),
-          //   child: Align(
-          //     alignment: Alignment.bottomCenter,
-          //     child: Padding(
-          //       padding: const EdgeInsets.only(bottom: 18.0),
-          //       child: Text('Bem Vindo!',
-          //           style: Theme.of(context).primaryTextTheme.headline5),
-          //     ),
-          //   ),
-          // ),
           _createTile(
             context,
             icon: Icons.shopping_bag_outlined,
@@ -51,6 +40,12 @@ class AppDrawer extends StatelessWidget {
             icon: Icons.payment_rounded,
             route: AppRoutes.ORDER,
             title: 'Pedidos',
+          ),
+          _createTile(
+            context,
+            icon: Icons.edit,
+            route: AppRoutes.PRODUCT_MANAGER,
+            title: 'Gerenciar Produtos',
           ),
         ],
       ),

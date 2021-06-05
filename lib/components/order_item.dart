@@ -26,7 +26,7 @@ class OrderItem extends StatelessWidget {
                 color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           subtitle: Text(
-            DateFormat('dd-MM-yyyy hh:mm').format(order.date),
+            DateFormat('dd MMM yyyy - HH:mm').format(order.date),
             style: TextStyle(color: Colors.grey, fontSize: 16),
           ),
           children: order.products.asMap().entries.map((entry) {

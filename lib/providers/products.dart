@@ -4,15 +4,13 @@ import 'package:shop/providers/product.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = DUMMY_PRODUCTS;
-  // TODO - Lembrete: Filtro aplicado globalmente
-  // bool _showFavoriteOnly = false;
 
   List<Product> get items {
-    // if (_showFavoriteOnly) {
-    //   return _items.where((item) => item.isFavorite).toList();
-    // }
+    return [..._items];
+  }
 
-    return [..._items].toList();
+  int get itemCount {
+    return _items.length;
   }
 
   List<Product> get favoriteItems {
@@ -28,14 +26,4 @@ class ProductsProvider with ChangeNotifier {
     _items.remove(product);
     notifyListeners();
   }
-
-  // void showFavoriteOnly() {
-  //   _showFavoriteOnly = true;
-  //   notifyListeners();
-  // }
-
-  // void showAll() {
-  //   _showFavoriteOnly = false;
-  //   notifyListeners();
-  // }
 }

@@ -4,7 +4,7 @@ import 'package:shop/providers/product.dart';
 import 'package:shop/providers/cart.dart';
 import 'package:shop/routes/app_routes.dart';
 
-class ProductItem extends StatelessWidget {
+class ProductGridItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Product product = Provider.of<Product>(context, listen: false);
@@ -64,6 +64,20 @@ class ProductItem extends StatelessWidget {
             color: Theme.of(context).accentColor,
             onPressed: () {
               cart.addItemInCart(product);
+
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${product.title} adicionado ao carrinho'),
+                  duration: Duration(seconds: 1),
+                  action: SnackBarAction(
+                    label: 'Desfazer',
+                    onPressed: () {
+                      cart.removeSingleItemInCart(product);
+                    },
+                  ),
+                ),
+              );
             },
           ),
         ),
