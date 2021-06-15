@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shop/pages/cart_page.dart';
 import 'package:shop/pages/order_page.dart';
 import 'package:shop/pages/product_detail_page.dart';
-import 'package:shop/pages/product_manager.dart';
+import 'package:shop/pages/product_manager_page.dart';
 import 'package:shop/pages/product_manager_form_page.dart';
 import 'package:shop/pages/products_overview_page.dart';
 import 'package:shop/providers/cart.dart';

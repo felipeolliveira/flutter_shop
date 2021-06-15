@@ -19,10 +19,7 @@ class ProductManagerPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.add_box_outlined),
             onPressed: () {
-              Navigator.of(context).pushNamed(
-                AppRoutes.PRODUCT_MANAGER_FORM,
-                arguments: 'Novo produto',
-              );
+              Navigator.of(context).pushNamed(AppRoutes.PRODUCT_MANAGER_FORM);
             },
           ),
         ],
