@@ -12,6 +12,7 @@ class ProductManagerFormPage extends StatefulWidget {
 class _ProductManagerFormPageState extends State<ProductManagerFormPage> {
   final _form = GlobalKey<FormState>();
   final Map<String, Object> _formData = {};
+  bool _isLoading = false;
 
   final _imageUrlFocus = FocusNode();
   final _imageUrlController = TextEditingController();
@@ -68,6 +69,10 @@ class _ProductManagerFormPageState extends State<ProductManagerFormPage> {
 
     _form.currentState.save();
 
+    setState(() {
+      _isLoading = true;
+    });
+
     final Product product = Product(
       id: _formData['id'],
       description: _formData['description'],
@@ -79,12 +84,20 @@ class _ProductManagerFormPageState extends State<ProductManagerFormPage> {
     final products = Provider.of<ProductsProvider>(context, listen: false);
 
     if (_formData['id'] == null) {
-      products.addProduct(product);
+      products.addProduct(product).then((value) {
+        Navigator.of(context).pop();
+        setState(() {
+          _isLoading = false;
+        });
+      });
     } else {
       products.updateProduct(product);
-    }
+      setState(() {
+        _isLoading = true;
+      });
 
-    Navigator.of(context).pop();
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -101,85 +114,91 @@ class _ProductManagerFormPageState extends State<ProductManagerFormPage> {
           )
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(15.0),
-        child: Form(
-          key: _form,
-          child: ListView(
-            children: [
-              TextFormField(
-                initialValue: _formData['title'],
-                decoration: InputDecoration(labelText: 'Título'),
-                textInputAction: TextInputAction.next,
-                onSaved: (value) => _formData['title'] = value,
-                validator: (value) {
-                  return InputValidator.title(value);
-                },
-              ),
-              TextFormField(
-                initialValue: _formData['price'].toString(),
-                decoration: InputDecoration(labelText: 'Preço'),
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                textInputAction: TextInputAction.next,
-                onSaved: (value) => _formData['price'] = double.parse(value),
-                validator: (value) {
-                  return InputValidator.price(value);
-                },
-              ),
-              TextFormField(
-                initialValue: _formData['description'],
-                maxLines: 3,
-                decoration: InputDecoration(labelText: 'Descrição'),
-                keyboardType: TextInputType.multiline,
-                onSaved: (value) => _formData['description'] = value,
-                validator: (value) {
-                  return InputValidator.description(value);
-                },
-              ),
-              TextFormField(
-                decoration: InputDecoration(labelText: 'Url da Imagem'),
-                keyboardType: TextInputType.url,
-                textInputAction: TextInputAction.done,
-                focusNode: _imageUrlFocus,
-                controller: _imageUrlController,
-                onSaved: (value) => _formData['imageUrl'] = value,
-                validator: (value) {
-                  return InputValidator.url(value);
-                },
-              ),
-              Container(
-                width: double.infinity,
-                margin: const EdgeInsets.only(top: 20),
-                child: Column(
+      body: _isLoading
+          ? Center(
+              child: CircularProgressIndicator.adaptive(),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Form(
+                key: _form,
+                child: ListView(
                   children: [
-                    Chip(
-                      label: Text(
-                        _imageUrlController.text.isEmpty
-                            ? 'Preview: informe uma URL válida'
-                            : 'Preview',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      backgroundColor: _imageUrlController.text.isEmpty
-                          ? Theme.of(context).errorColor
-                          : Theme.of(context).primaryColor,
+                    TextFormField(
+                      initialValue: _formData['title'],
+                      decoration: InputDecoration(labelText: 'Título'),
+                      textInputAction: TextInputAction.next,
+                      onSaved: (value) => _formData['title'] = value,
+                      validator: (value) {
+                        return InputValidator.title(value);
+                      },
                     ),
-                    if (_imageUrlController.text.isNotEmpty)
-                      Container(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(20),
-                          child: Image.network(
-                            _imageUrlController.text,
-                            fit: BoxFit.fitWidth,
+                    TextFormField(
+                      initialValue: _formData['price'].toString(),
+                      decoration: InputDecoration(labelText: 'Preço'),
+                      keyboardType:
+                          TextInputType.numberWithOptions(decimal: true),
+                      textInputAction: TextInputAction.next,
+                      onSaved: (value) =>
+                          _formData['price'] = double.parse(value),
+                      validator: (value) {
+                        return InputValidator.price(value);
+                      },
+                    ),
+                    TextFormField(
+                      initialValue: _formData['description'],
+                      maxLines: 3,
+                      decoration: InputDecoration(labelText: 'Descrição'),
+                      keyboardType: TextInputType.multiline,
+                      onSaved: (value) => _formData['description'] = value,
+                      validator: (value) {
+                        return InputValidator.description(value);
+                      },
+                    ),
+                    TextFormField(
+                      decoration: InputDecoration(labelText: 'Url da Imagem'),
+                      keyboardType: TextInputType.url,
+                      textInputAction: TextInputAction.done,
+                      focusNode: _imageUrlFocus,
+                      controller: _imageUrlController,
+                      onSaved: (value) => _formData['imageUrl'] = value,
+                      validator: (value) {
+                        return InputValidator.url(value);
+                      },
+                    ),
+                    Container(
+                      width: double.infinity,
+                      margin: const EdgeInsets.only(top: 20),
+                      child: Column(
+                        children: [
+                          Chip(
+                            label: Text(
+                              _imageUrlController.text.isEmpty
+                                  ? 'Preview: informe uma URL válida'
+                                  : 'Preview',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            backgroundColor: _imageUrlController.text.isEmpty
+                                ? Theme.of(context).errorColor
+                                : Theme.of(context).primaryColor,
                           ),
-                        ),
+                          if (_imageUrlController.text.isNotEmpty)
+                            Container(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(20),
+                                child: Image.network(
+                                  _imageUrlController.text,
+                                  fit: BoxFit.fitWidth,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
+                    ),
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

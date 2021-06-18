@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:shop/data/dummy_data.dart';
 import 'package:shop/providers/product.dart';
+import 'package:shop/services/api.dart';
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = DUMMY_PRODUCTS;
@@ -19,17 +21,29 @@ class ProductsProvider with ChangeNotifier {
     return _items.where((product) => product.isFavorite).toList();
   }
 
-  void addProduct(Product newProduct) {
-    _items.add(
-      Product(
-        id: Random().nextDouble().toString(),
-        description: newProduct.description,
-        imageUrl: newProduct.imageUrl,
-        price: newProduct.price,
-        title: newProduct.title,
-      ),
-    );
-    notifyListeners();
+  Future<void> addProduct(Product newProduct) {
+    return Api('products.json')
+        .post(
+      json.encode({
+        'description': newProduct.description,
+        'imageUrl': newProduct.imageUrl,
+        'price': newProduct.price,
+        'title': newProduct.title,
+        'isFavorite': newProduct.isFavorite,
+      }),
+    )
+        .then((response) {
+      _items.add(
+        Product(
+          id: json.decode(response.body)['name'],
+          description: newProduct.description,
+          imageUrl: newProduct.imageUrl,
+          price: newProduct.price,
+          title: newProduct.title,
+        ),
+      );
+      notifyListeners();
+    });
   }
 
   void updateProduct(Product product) {
