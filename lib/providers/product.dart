@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:shop/services/api.dart';
 
 class Product with ChangeNotifier {
   final String id;
@@ -17,8 +20,24 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toogleFavorite() {
+  void _toogleFavorite() {
     isFavorite = !isFavorite;
     notifyListeners();
+  }
+
+  Future<void> toogleFavorite() async {
+    _toogleFavorite();
+
+    try {
+      final response = await Api('products/${id}.json').patch(
+        {'isFavorite': isFavorite},
+      );
+
+      if (response.statusCode >= 400) {
+        _toogleFavorite();
+      }
+    } catch (error) {
+      _toogleFavorite();
+    }
   }
 }

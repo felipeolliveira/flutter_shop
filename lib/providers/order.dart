@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:shop/providers/cart.dart';
+import 'package:shop/services/api.dart';
 
 class Order {
   final String id;
@@ -28,13 +30,30 @@ class OrdersProvider with ChangeNotifier {
     return _items.length;
   }
 
-  void addOrder(CartProvider cart) {
+  Future<void> addOrder(CartProvider cart) async {
+    final date = DateTime.now();
+
+    final response = await Api('orders.json').post({
+      'amount': cart.totalPrice,
+      'date': date.toIso8601String(),
+      'products': cart.items.values
+          .map((cartItem) => {
+                'id': cartItem.id,
+                'productId': cartItem.productId,
+                'title': cartItem.title,
+                'quantity': cartItem.quantity,
+                'price': cartItem.price,
+                'imageUrl': cartItem.imageUrl,
+              })
+          .toList()
+    });
+
     _items.insert(
       0,
       Order(
-        id: Random().nextDouble().toString(),
+        id: json.decode(response.body)['name'],
         amount: cart.totalPrice,
-        date: DateTime.now(),
+        date: date,
         products: cart.items.values.toList(),
       ),
     );

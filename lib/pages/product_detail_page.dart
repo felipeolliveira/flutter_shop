@@ -18,7 +18,7 @@ class ProductDetailPage extends StatelessWidget {
             height: 400,
             child: Image.network(
               product.imageUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.contain,
             ),
           ),
           SizedBox(height: 15),

@@ -60,7 +60,7 @@ class _ProductManagerFormPageState extends State<ProductManagerFormPage> {
     }
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     bool isValide = _form.currentState.validate();
 
     if (!isValide) {
@@ -83,20 +83,34 @@ class _ProductManagerFormPageState extends State<ProductManagerFormPage> {
 
     final products = Provider.of<ProductsProvider>(context, listen: false);
 
-    if (_formData['id'] == null) {
-      products.addProduct(product).then((value) {
-        Navigator.of(context).pop();
-        setState(() {
-          _isLoading = false;
-        });
-      });
-    } else {
-      products.updateProduct(product);
-      setState(() {
-        _isLoading = true;
-      });
-
+    try {
+      if (_formData['id'] == null) {
+        await products.addProduct(product);
+      } else {
+        await products.updateProduct(product);
+      }
       Navigator.of(context).pop();
+    } catch (err) {
+      await showDialog<Null>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Ocorreu um erro!'),
+          content: Text(
+              'Nos desculpe, ocorreu um erro ao salvar o produto no nosso servidor.'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Ok'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 

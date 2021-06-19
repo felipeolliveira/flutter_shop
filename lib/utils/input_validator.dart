@@ -31,8 +31,8 @@ class InputValidator {
       return _isEmpty;
     }
 
-    if (value.trim().length < 30) {
-      return _minLenght(30);
+    if (value.trim().length < 10) {
+      return _minLenght(10);
     }
   }
 

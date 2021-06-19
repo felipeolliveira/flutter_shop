@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/errors/api_errors.dart';
 import 'package:shop/providers/product.dart';
 import 'package:shop/providers/products.dart';
 import 'package:shop/routes/app_routes.dart';
@@ -10,8 +11,7 @@ class ProductManagerItem extends StatelessWidget {
   ProductManagerItem(this.product);
 
   _onRemoveProductItem(
-    BuildContext context,
-  ) {
+      BuildContext context, ScaffoldMessengerState scaffoldMessenger) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
@@ -32,18 +32,30 @@ class ProductManagerItem extends StatelessWidget {
               child: Text('Sim')),
         ],
       ),
-    ).then((value) {
+    ).then((value) async {
       if (value) {
-        Provider.of<ProductsProvider>(
-          context,
-          listen: false,
-        ).removeProduct(product.id);
+        try {
+          await Provider.of<ProductsProvider>(
+            context,
+            listen: false,
+          ).removeProduct(product.id);
+        } on ApiErrors catch (error) {
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text(
+                error.toString(),
+              ),
+            ),
+          );
+        }
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final _scaffoldMessenger = ScaffoldMessenger.of(context);
+
     return ListTile(
       leading: CircleAvatar(
         backgroundImage: NetworkImage(product.imageUrl),
@@ -64,7 +76,8 @@ class ProductManagerItem extends StatelessWidget {
             IconButton(
               icon: Icon(Icons.delete_outline_rounded),
               color: Theme.of(context).errorColor,
-              onPressed: () => _onRemoveProductItem(context),
+              onPressed: () =>
+                  _onRemoveProductItem(context, _scaffoldMessenger),
             ),
           ],
         ),

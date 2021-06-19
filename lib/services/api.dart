@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:http/http.dart' as http;
 
 class Api {
@@ -9,6 +11,18 @@ class Api {
   }
 
   Future<http.Response> post(Object body) {
-    return http.post(_url, body: body);
+    return http.post(_url, body: json.encode(body));
+  }
+
+  Future<http.Response> get() {
+    return http.get(_url);
+  }
+
+  Future<http.Response> patch(Object body) {
+    return http.patch(_url, body: json.encode(body));
+  }
+
+  Future<http.Response> delete() {
+    return http.delete(_url);
   }
 }

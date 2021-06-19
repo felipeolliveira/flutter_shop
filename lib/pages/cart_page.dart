@@ -33,18 +33,8 @@ class CartPage extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextButton(
-                style: TextButton.styleFrom(
-                  primary: Theme.of(context).accentColor,
-                ),
-                onPressed: () {
-                  ordersProvider.addOrder(cartProvider);
-                  cartProvider.clearCart();
-                },
-                child: Text(
-                  'COMPRAR',
-                ),
-              ),
+              OrderButton(
+                  cartProvider: cartProvider, ordersProvider: ordersProvider),
               Spacer(),
               Text(
                 'Total:',
@@ -71,6 +61,55 @@ class CartPage extends StatelessWidget {
           return CartPageItem(cartItems[index]);
         },
       ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  const OrderButton({
+    Key key,
+    @required this.cartProvider,
+    @required this.ordersProvider,
+  }) : super(key: key);
+
+  final CartProvider cartProvider;
+  final OrdersProvider ordersProvider;
+
+  @override
+  _OrderButtonState createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  bool _isLoading = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      style: TextButton.styleFrom(
+        primary: Theme.of(context).accentColor,
+      ),
+      onPressed: widget.cartProvider.totalAmount == 0
+          ? null
+          : () async {
+              setState(() {
+                _isLoading = true;
+              });
+
+              await widget.ordersProvider.addOrder(widget.cartProvider);
+
+              setState(() {
+                _isLoading = false;
+              });
+
+              widget.cartProvider.clearCart();
+            },
+      child: _isLoading
+          ? CircularProgressIndicator.adaptive()
+          : Text(
+              widget.cartProvider.totalAmount == 0
+                  ? 'Carrinho vazio'
+                  : 'Comprar',
+            ),
     );
   }
 }

@@ -1,13 +1,13 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:shop/data/dummy_data.dart';
+import 'package:shop/errors/api_errors.dart';
 import 'package:shop/providers/product.dart';
 import 'package:shop/services/api.dart';
 
 class ProductsProvider with ChangeNotifier {
-  List<Product> _items = DUMMY_PRODUCTS;
+  List<Product> _items = [];
 
   List<Product> get items {
     return [..._items];
@@ -21,32 +21,54 @@ class ProductsProvider with ChangeNotifier {
     return _items.where((product) => product.isFavorite).toList();
   }
 
-  Future<void> addProduct(Product newProduct) {
-    return Api('products.json')
-        .post(
-      json.encode({
+  Future<void> loadProducts() async {
+    final response = await Api('products.json').get();
+    Map<String, dynamic> data = json.decode(response.body);
+
+    _items.clear();
+
+    if (data != null) {
+      data.forEach((productId, productData) {
+        _items.add(Product(
+          id: productId,
+          title: productData['title'],
+          description: productData['description'],
+          price: productData['price'],
+          imageUrl: productData['imageUrl'],
+          isFavorite: productData['isFavorite'],
+        ));
+      });
+      notifyListeners();
+    }
+
+    return Future.value();
+  }
+
+  Future<void> addProduct(Product newProduct) async {
+    final response = await Api('products.json').post(
+      {
         'description': newProduct.description,
         'imageUrl': newProduct.imageUrl,
         'price': newProduct.price,
         'title': newProduct.title,
         'isFavorite': newProduct.isFavorite,
-      }),
-    )
-        .then((response) {
-      _items.add(
-        Product(
-          id: json.decode(response.body)['name'],
-          description: newProduct.description,
-          imageUrl: newProduct.imageUrl,
-          price: newProduct.price,
-          title: newProduct.title,
-        ),
-      );
-      notifyListeners();
-    });
+      },
+    );
+
+    _items.add(
+      Product(
+        id: json.decode(response.body)['name'],
+        description: newProduct.description,
+        imageUrl: newProduct.imageUrl,
+        price: newProduct.price,
+        title: newProduct.title,
+      ),
+    );
+
+    notifyListeners();
   }
 
-  void updateProduct(Product product) {
+  Future<void> updateProduct(Product product) async {
     if (product == null || product.id == null) {
       return;
     }
@@ -54,17 +76,33 @@ class ProductsProvider with ChangeNotifier {
     final productIndex = _items.indexWhere((prod) => prod.id == product.id);
 
     if (productIndex >= 0) {
+      await Api('products/${product.id}.json').patch({
+        'description': product.description,
+        'imageUrl': product.imageUrl,
+        'price': product.price,
+        'title': product.title,
+      });
+
       _items[productIndex] = product;
       notifyListeners();
     }
   }
 
-  void removeProduct(String id) {
+  Future<void> removeProduct(String id) async {
     final productIndex = _items.indexWhere((prod) => prod.id == id);
 
     if (productIndex >= 0) {
-      _items.removeWhere((product) => product.id == id);
+      final product = _items[productIndex];
+      _items.remove(product);
       notifyListeners();
+
+      final response = await Api('products/${product.id}.json').delete();
+
+      if (response.statusCode >= 400) {
+        _items.insert(productIndex, product);
+        notifyListeners();
+        throw ApiErrors('Ocorreu um erro na exclusão do produto.');
+      }
     }
   }
 }
