@@ -3,7 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Api {
-  String _baseUrl = 'https://shop-flutter-73319-default-rtdb.firebaseio.com/';
+  final String _baseUrl =
+      'https://shop-flutter-73319-default-rtdb.firebaseio.com/';
   Uri _url;
 
   Api(String path) {

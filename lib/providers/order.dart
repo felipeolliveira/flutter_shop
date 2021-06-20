@@ -60,4 +60,38 @@ class OrdersProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> loadOrders() async {
+    List<Order> loadedItems = [];
+
+    final response = await Api('orders.json').get();
+    Map<String, dynamic> data = json.decode(response.body);
+
+    print(data);
+
+    if (data != null) {
+      data.forEach((orderId, orderData) {
+        loadedItems.add(Order(
+          id: orderId,
+          amount: orderData['amount'],
+          products: (orderData['products'] as List<dynamic>).map((item) {
+            return CartItem(
+              id: item['id'],
+              imageUrl: item['imageUrl'],
+              price: item['price'],
+              quantity: item['quantity'],
+              title: item['title'],
+              productId: item['productId'],
+            );
+          }).toList(),
+          date: DateTime.parse(orderData['date']),
+        ));
+      });
+      notifyListeners();
+    }
+
+    _items = loadedItems.reversed.toList();
+
+    return Future.value();
+  }
 }
