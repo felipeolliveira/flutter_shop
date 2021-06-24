@@ -32,7 +32,7 @@ class AppDrawer extends StatelessWidget {
           _createTile(
             context,
             icon: Icons.shopping_bag_outlined,
-            route: AppRoutes.PRODUCT_OVERVIEW,
+            route: AppRoutes.INDEX,
             title: 'Loja',
           ),
           _createTile(

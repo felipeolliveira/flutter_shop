@@ -16,8 +16,7 @@ class OrderPage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.shopping_bag_outlined),
             onPressed: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(AppRoutes.PRODUCT_OVERVIEW);
+              Navigator.of(context).pushReplacementNamed(AppRoutes.INDEX);
             },
           ),
         ],

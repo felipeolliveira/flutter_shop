@@ -25,13 +25,12 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toogleFavorite() async {
+  Future<void> toogleFavorite(String token, String userId) async {
     _toogleFavorite();
 
     try {
-      final response = await Api('products/${id}.json').patch(
-        {'isFavorite': isFavorite},
-      );
+      final response = await Api('/userFavorites/$userId/$id.json?auth=$token')
+          .put(isFavorite);
 
       if (response.statusCode >= 400) {
         _toogleFavorite();

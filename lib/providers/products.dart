@@ -1,13 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:shop/data/dummy_data.dart';
 import 'package:shop/errors/api_errors.dart';
 import 'package:shop/providers/product.dart';
 import 'package:shop/services/api.dart';
 
 class ProductsProvider with ChangeNotifier {
-  List<Product> _items = [];
+  ProductsProvider(this._token, this._items);
+
+  final List<Product> _items;
+  final String _token;
 
   List<Product> get items {
     return [..._items];
@@ -22,7 +24,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> loadProducts() async {
-    final response = await Api('products.json').get();
+    final response = await Api('/products.json?auth=$_token').get();
     Map<String, dynamic> data = json.decode(response.body);
 
     _items.clear();
@@ -45,7 +47,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product newProduct) async {
-    final response = await Api('products.json').post(
+    final response = await Api('/products.json?auth=$_token').post(
       {
         'description': newProduct.description,
         'imageUrl': newProduct.imageUrl,
@@ -76,7 +78,7 @@ class ProductsProvider with ChangeNotifier {
     final productIndex = _items.indexWhere((prod) => prod.id == product.id);
 
     if (productIndex >= 0) {
-      await Api('products/${product.id}.json').patch({
+      await Api('/products/${product.id}.json?auth=$_token').patch({
         'description': product.description,
         'imageUrl': product.imageUrl,
         'price': product.price,
@@ -96,7 +98,8 @@ class ProductsProvider with ChangeNotifier {
       _items.remove(product);
       notifyListeners();
 
-      final response = await Api('products/${product.id}.json').delete();
+      final response =
+          await Api('/products/${product.id}.json?auth=$_token').delete();
 
       if (response.statusCode >= 400) {
         _items.insert(productIndex, product);

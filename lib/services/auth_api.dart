@@ -2,13 +2,13 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-class Api {
-  final String _baseUrl =
-      'https://shop-flutter-73319-default-rtdb.firebaseio.com';
+class AuthApi {
+  final String _key = 'AIzaSyA1daSNHmB_gLnvQnI3ySiBH-CtGGq80Cs';
   Uri _url;
 
-  Api(String path) {
-    _url = Uri.parse('$_baseUrl$path');
+  AuthApi(String serviceType) {
+    _url = Uri.parse(
+        'https://identitytoolkit.googleapis.com/v1/accounts:${serviceType}?key=${_key}');
   }
 
   Future<http.Response> post(Object body) {
@@ -21,10 +21,6 @@ class Api {
 
   Future<http.Response> patch(Object body) {
     return http.patch(_url, body: json.encode(body));
-  }
-
-  Future<http.Response> put(Object body) {
-    return http.put(_url, body: json.encode(body));
   }
 
   Future<http.Response> delete() {
