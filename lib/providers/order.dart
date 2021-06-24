@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:shop/providers/cart.dart';
@@ -20,10 +19,11 @@ class Order {
 }
 
 class OrdersProvider with ChangeNotifier {
-  OrdersProvider(this._token, this._items);
+  OrdersProvider([this._token, this._userId, this._items = const []]);
 
   List<Order> _items;
   final String _token;
+  final String _userId;
 
   List<Order> get items {
     return [..._items];
@@ -36,7 +36,7 @@ class OrdersProvider with ChangeNotifier {
   Future<void> addOrder(CartProvider cart) async {
     final date = DateTime.now();
 
-    final response = await Api('orders.json?auth=$_token').post({
+    final response = await Api('/orders/$_userId.json?auth=$_token').post({
       'amount': cart.totalPrice,
       'date': date.toIso8601String(),
       'products': cart.items.values
@@ -67,7 +67,7 @@ class OrdersProvider with ChangeNotifier {
   Future<void> loadOrders() async {
     List<Order> loadedItems = [];
 
-    final response = await Api('orders.json?auth=$_token').get();
+    final response = await Api('/orders/$_userId.json?auth=$_token').get();
     Map<String, dynamic> data = json.decode(response.body);
 
     print(data);

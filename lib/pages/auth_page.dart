@@ -85,6 +85,7 @@ class _AuthPageState extends State<AuthPage> {
     final deviceWidth = MediaQuery.of(context).size.width;
 
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+      statusBarColor: Color(0xFF8E2DE2),
       systemNavigationBarColor: Color(0xFF4A00E0),
     ));
 

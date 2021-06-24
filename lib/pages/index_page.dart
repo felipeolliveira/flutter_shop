@@ -9,8 +9,28 @@ class IndexPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
 
-    print(auth.isAuth);
+    return FutureBuilder(
+      future: auth.tryAutoLogin(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            body: Center(
+              child: CircularProgressIndicator.adaptive(),
+            ),
+          );
+        }
 
-    return auth.isAuth ? ProductsOverviewPage() : AuthPage();
+        if (snapshot.error != null) {
+          return Scaffold(
+            body: Center(
+              child: Text(
+                  'Ocorreu um erro ao sincronizar os dados. Verifique sua internet.'),
+            ),
+          );
+        }
+
+        return auth.isAuth ? ProductsOverviewPage() : AuthPage();
+      },
+    );
   }
 }

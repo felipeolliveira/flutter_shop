@@ -6,10 +6,11 @@ import 'package:shop/providers/product.dart';
 import 'package:shop/services/api.dart';
 
 class ProductsProvider with ChangeNotifier {
-  ProductsProvider(this._token, this._items);
+  ProductsProvider([this._token, this._userId, this._items = const []]);
 
   final List<Product> _items;
   final String _token;
+  final String _userId;
 
   List<Product> get items {
     return [..._items];
@@ -27,17 +28,25 @@ class ProductsProvider with ChangeNotifier {
     final response = await Api('/products.json?auth=$_token').get();
     Map<String, dynamic> data = json.decode(response.body);
 
+    final favoriteResponse =
+        await Api('/userFavorites/$_userId.json?auth=$_token').get();
+    final favoriteResponseMap = json.decode(favoriteResponse.body);
+
     _items.clear();
 
     if (data != null) {
       data.forEach((productId, productData) {
+        final isFavorite = favoriteResponseMap == null
+            ? false
+            : favoriteResponseMap[productId] ?? false;
+
         _items.add(Product(
           id: productId,
           title: productData['title'],
           description: productData['description'],
           price: productData['price'],
           imageUrl: productData['imageUrl'],
-          isFavorite: productData['isFavorite'],
+          isFavorite: isFavorite,
         ));
       });
       notifyListeners();
@@ -53,7 +62,6 @@ class ProductsProvider with ChangeNotifier {
         'imageUrl': newProduct.imageUrl,
         'price': newProduct.price,
         'title': newProduct.title,
-        'isFavorite': newProduct.isFavorite,
       },
     );
 
