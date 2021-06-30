@@ -33,6 +33,7 @@ dependencies:
   http: ^0.13.3
   fluttertoast: ^8.0.7
   shared_preferences: ^2.0.6
+  flutter_dotenv: ^5.0.0
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/product-placeholder.png
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

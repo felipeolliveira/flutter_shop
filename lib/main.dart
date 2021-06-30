@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shop/pages/cart_page.dart';
 import 'package:shop/pages/index_page.dart';
 import 'package:shop/pages/order_page.dart';
@@ -14,7 +15,9 @@ import 'package:shop/routes/app_routes.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/utils/custom_page_transition_builder.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
+
   runApp(MyApp());
 }
 

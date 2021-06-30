@@ -1,10 +1,10 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class Api {
-  final String _baseUrl =
-      'https://shop-flutter-73319-default-rtdb.firebaseio.com';
+  final String _baseUrl = dotenv.env['FIREBASE_REALTIME_URL'];
   Uri _url;
 
   Api(String path) {

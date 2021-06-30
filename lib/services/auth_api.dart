@@ -1,9 +1,10 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class AuthApi {
-  final String _key = 'AIzaSyA1daSNHmB_gLnvQnI3ySiBH-CtGGq80Cs';
+  final String _key = dotenv.env['FIREBASE_AUTH_URL'];
   Uri _url;
 
   AuthApi(String serviceType) {
