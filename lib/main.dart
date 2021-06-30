@@ -12,6 +12,7 @@ import 'package:shop/providers/order.dart';
 import 'package:shop/providers/products.dart';
 import 'package:shop/routes/app_routes.dart';
 import 'package:provider/provider.dart';
+import 'package:shop/utils/custom_page_transition_builder.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.deepPurple,
           accentColor: Colors.red,
           scaffoldBackgroundColor: Color(0xFFF2F2F2),
+          fontFamily: 'Lato',
           appBarTheme: AppBarTheme(
             backwardsCompatibility: false,
             backgroundColor: Colors.deepPurple,
@@ -65,7 +67,8 @@ class MyApp extends StatelessWidget {
           ),
           pageTransitionsTheme: PageTransitionsTheme(
             builders: {
-              TargetPlatform.android: OpenUpwardsPageTransitionsBuilder(),
+              TargetPlatform.android: CustomPageTransitionBuilder(),
+              TargetPlatform.iOS: CustomPageTransitionBuilder(),
             },
           ),
         ),
