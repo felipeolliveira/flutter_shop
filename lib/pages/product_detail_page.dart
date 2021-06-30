@@ -7,29 +7,48 @@ class ProductDetailPage extends StatelessWidget {
     Product product = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(product.title),
-      ),
-      body: SingleChildScrollView(
-          child: Column(
-        children: [
-          Container(
-            width: double.infinity,
-            height: 400,
-            child: Hero(
-              tag: product.id,
-              child: Image.network(
-                product.imageUrl,
-                fit: BoxFit.contain,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 400,
+            pinned: true,
+            flexibleSpace: FlexibleSpaceBar(
+              title: Text(product.title),
+              centerTitle: true,
+              background: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: product.id,
+                    child: Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Color(0x00000000), Colors.black],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
-          SizedBox(height: 15),
-          Text(product.title),
-          Text('R\$ ${product.price.toStringAsFixed(2)}'),
-          Text(product.description),
+          SliverList(
+            delegate: SliverChildListDelegate([
+              SizedBox(height: 15),
+              Text(product.title),
+              Text('R\$ ${product.price.toStringAsFixed(2)}'),
+              Text(product.description),
+              SizedBox(height: 1000),
+            ]),
+          )
         ],
-      )),
+      ),
     );
   }
 }
