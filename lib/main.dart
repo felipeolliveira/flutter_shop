@@ -53,6 +53,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.deepPurple,
           accentColor: Colors.red,
+          scaffoldBackgroundColor: Color(0xFFF2F2F2),
           appBarTheme: AppBarTheme(
             backwardsCompatibility: false,
             backgroundColor: Colors.deepPurple,
@@ -64,7 +65,7 @@ class MyApp extends StatelessWidget {
           ),
           pageTransitionsTheme: PageTransitionsTheme(
             builders: {
-              TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+              TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
             },
           ),
         ),

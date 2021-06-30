@@ -8,7 +8,7 @@ class AuthApi {
 
   AuthApi(String serviceType) {
     _url = Uri.parse(
-        'https://identitytoolkit.googleapis.com/v1/accounts:${serviceType}?key=${_key}');
+        'https://identitytoolkit.googleapis.com/v1/accounts:$serviceType?key=$_key');
   }
 
   Future<http.Response> post(Object body) {

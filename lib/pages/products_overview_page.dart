@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shop/components/app_drawer.dart';
 import 'package:shop/components/badge.dart';
@@ -75,13 +76,19 @@ class _ProductsOverviewPageState extends State<ProductsOverviewPage> {
           )
         ],
       ),
-      body: _isLoading
-          ? Center(
-              child: CircularProgressIndicator.adaptive(),
-            )
-          : Container(
-              child: ProductGrid(showFavoriteOnly),
-            ),
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          systemNavigationBarIconBrightness: Brightness.dark,
+          systemNavigationBarColor: Theme.of(context).scaffoldBackgroundColor,
+        ),
+        child: _isLoading
+            ? Center(
+                child: CircularProgressIndicator.adaptive(),
+              )
+            : Container(
+                child: ProductGrid(showFavoriteOnly),
+              ),
+      ),
     );
   }
 }

@@ -13,7 +13,8 @@ class AuthPage extends StatefulWidget {
   _AuthPageState createState() => _AuthPageState();
 }
 
-class _AuthPageState extends State<AuthPage> {
+class _AuthPageState extends State<AuthPage>
+    with SingleTickerProviderStateMixin {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final Map<String, String> _authData = {
     'email': '',
@@ -23,6 +24,36 @@ class _AuthPageState extends State<AuthPage> {
   final TextEditingController _passwordController = TextEditingController();
   bool _showPasswordText = false;
   bool _isLoading = false;
+
+  AnimationController _animationController;
+  Animation<double> _opacityAnimation;
+  Animation<Offset> _slideAnimation;
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    _passwordController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 300),
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.ease),
+    );
+
+    _slideAnimation =
+        Tween<Offset>(begin: Offset(-0.1, 0), end: Offset(0, 0)).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.ease),
+    );
+  }
 
   Future<void> _submit() async {
     if (!_formKey.currentState.validate()) {
@@ -75,8 +106,10 @@ class _AuthPageState extends State<AuthPage> {
   void switchAuthMode() {
     if (_authMode == AuthMode.Login) {
       setState(() => _authMode = AuthMode.SignUp);
+      _animationController.forward();
     } else {
       setState(() => _authMode = AuthMode.Login);
+      _animationController.reverse();
     }
   }
 
@@ -84,190 +117,210 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     final deviceWidth = MediaQuery.of(context).size.width;
 
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Color(0xFF8E2DE2),
-      systemNavigationBarColor: Color(0xFF4A00E0),
-    ));
-
     return Scaffold(
-      body: Stack(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF8E2DE2),
-                  Color(0xFF4A00E0),
-                ],
+      body: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+          systemNavigationBarIconBrightness: Brightness.light,
+          statusBarColor: Color(0xFF8E2DE2),
+          systemNavigationBarColor: Color(0xFF4A00E0),
+        ),
+        child: Stack(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF8E2DE2),
+                    Color(0xFF4A00E0),
+                  ],
+                ),
               ),
             ),
-          ),
-          Center(
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        width: 2,
-                        color: Colors.white,
-                      ),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.shopping_basket_outlined,
-                          color: Colors.white,
-                          size: 32,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          'Shops'.toUpperCase(),
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 28,
-                            letterSpacing: 3,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  if (_isLoading)
-                    CircularProgressIndicator.adaptive(
-                      semanticsLabel: 'Carregando',
-                      semanticsValue: 'Carregando',
-                      valueColor: AlwaysStoppedAnimation(
-                        Theme.of(context).primaryColor,
-                      ),
-                      backgroundColor: Colors.white,
-                    ),
-                  if (!_isLoading)
+            Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
                     Container(
-                      width: deviceWidth * 0.8,
-                      child: Card(
-                        elevation: 5,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 16),
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 2,
+                          color: Colors.white,
                         ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: 16.0,
-                            horizontal: 16.0,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.shopping_basket_outlined,
+                            color: Colors.white,
+                            size: 32,
                           ),
-                          child: Form(
-                            key: _formKey,
-                            autovalidateMode:
-                                AutovalidateMode.onUserInteraction,
-                            child: Column(
-                              children: [
-                                TextFormField(
-                                  keyboardType: TextInputType.emailAddress,
-                                  decoration: InputDecoration(
-                                    labelText: 'Email',
-                                  ),
-                                  validator: (value) =>
-                                      InputValidator.email(value),
-                                  onSaved: (value) =>
-                                      _authData['email'] = value,
-                                ),
-                                TextFormField(
-                                  controller: _passwordController,
-                                  autocorrect: false,
-                                  obscureText: !_showPasswordText,
-                                  keyboardType: TextInputType.text,
-                                  validator: (value) =>
-                                      InputValidator.password(value),
-                                  decoration: InputDecoration(
-                                    labelText: 'Senha',
-                                    suffixIcon: IconButton(
-                                      icon: Icon(
-                                        _showPasswordText
-                                            ? Icons.remove_red_eye_outlined
-                                            : Icons.visibility_off_outlined,
-                                      ),
-                                      color: _showPasswordText
-                                          ? Theme.of(context).primaryColor
-                                          : Theme.of(context).buttonColor,
-                                      onPressed: () => setState(
-                                        () => _showPasswordText =
-                                            !_showPasswordText,
-                                      ),
-                                    ),
-                                  ),
-                                  onSaved: (value) =>
-                                      _authData['password'] = value,
-                                ),
-                                if (_authMode == AuthMode.SignUp)
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            'Shops'.toUpperCase(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 28,
+                              letterSpacing: 3,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 30,
+                    ),
+                    if (_isLoading)
+                      CircularProgressIndicator.adaptive(
+                        semanticsLabel: 'Carregando',
+                        semanticsValue: 'Carregando',
+                        valueColor: AlwaysStoppedAnimation(
+                          Theme.of(context).primaryColor,
+                        ),
+                        backgroundColor: Colors.white,
+                      ),
+                    if (!_isLoading)
+                      Container(
+                        width: deviceWidth * 0.8,
+                        child: Card(
+                          elevation: 5,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 16.0,
+                              horizontal: 16.0,
+                            ),
+                            child: Form(
+                              key: _formKey,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              child: Column(
+                                children: [
                                   TextFormField(
-                                    obscureText: !_showPasswordText,
-                                    validator: _authMode == AuthMode.SignUp
-                                        ? (value) =>
-                                            InputValidator.checkPassword(
-                                              value,
-                                              _passwordController.text,
-                                            )
-                                        : null,
                                     keyboardType: TextInputType.emailAddress,
                                     decoration: InputDecoration(
-                                      labelText: 'Confirme a sua senha',
+                                      labelText: 'Email',
+                                    ),
+                                    validator: (value) =>
+                                        InputValidator.email(value),
+                                    onSaved: (value) =>
+                                        _authData['email'] = value,
+                                  ),
+                                  TextFormField(
+                                    controller: _passwordController,
+                                    autocorrect: false,
+                                    obscureText: !_showPasswordText,
+                                    keyboardType: TextInputType.text,
+                                    validator: (value) =>
+                                        InputValidator.password(value),
+                                    decoration: InputDecoration(
+                                      labelText: 'Senha',
+                                      suffixIcon: IconButton(
+                                        icon: Icon(
+                                          _showPasswordText
+                                              ? Icons.remove_red_eye_outlined
+                                              : Icons.visibility_off_outlined,
+                                        ),
+                                        color: _showPasswordText
+                                            ? Theme.of(context).primaryColor
+                                            : Theme.of(context).buttonColor,
+                                        onPressed: () => setState(
+                                          () => _showPasswordText =
+                                              !_showPasswordText,
+                                        ),
+                                      ),
+                                    ),
+                                    onSaved: (value) =>
+                                        _authData['password'] = value,
+                                  ),
+                                  AnimatedContainer(
+                                    constraints: BoxConstraints(
+                                      minHeight: 0,
+                                      maxHeight: _authMode == AuthMode.SignUp
+                                          ? 120
+                                          : 0,
+                                    ),
+                                    duration: Duration(milliseconds: 300),
+                                    curve: Curves.ease,
+                                    child: FadeTransition(
+                                      opacity: _opacityAnimation,
+                                      child: SlideTransition(
+                                        position: _slideAnimation,
+                                        child: TextFormField(
+                                          obscureText: !_showPasswordText,
+                                          validator: _authMode ==
+                                                  AuthMode.SignUp
+                                              ? (value) =>
+                                                  InputValidator.checkPassword(
+                                                    value,
+                                                    _passwordController.text,
+                                                  )
+                                              : null,
+                                          keyboardType:
+                                              TextInputType.emailAddress,
+                                          decoration: InputDecoration(
+                                            labelText: 'Confirme a sua senha',
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
-                                SizedBox(
-                                  height: 40,
-                                ),
-                                ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 8,
-                                      horizontal: 24,
+                                  SizedBox(
+                                    height: 40,
+                                  ),
+                                  ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 8,
+                                        horizontal: 24,
+                                      ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(100),
+                                      ),
                                     ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(100),
+                                    onPressed: _submit,
+                                    child: Text(
+                                      _authMode == AuthMode.Login
+                                          ? 'Entrar'
+                                          : 'Registrar',
                                     ),
                                   ),
-                                  onPressed: _submit,
-                                  child: Text(
-                                    _authMode == AuthMode.Login
-                                        ? 'Entrar'
-                                        : 'Registrar',
-                                  ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  if (!_isLoading)
-                    if (!_isLoading) SizedBox(height: 30),
-                  if (!_isLoading)
-                    TextButton(
-                      style: TextButton.styleFrom(primary: Colors.white),
-                      onPressed: switchAuthMode,
-                      child: Text(
-                        _authMode == AuthMode.Login
-                            ? 'Não tem conta? Registre-se aqui!'
-                            : 'Já tem conta? Faça seu login!',
+                    if (!_isLoading)
+                      if (!_isLoading) SizedBox(height: 30),
+                    if (!_isLoading)
+                      TextButton(
+                        style: TextButton.styleFrom(primary: Colors.white),
+                        onPressed: switchAuthMode,
+                        child: Text(
+                          _authMode == AuthMode.Login
+                              ? 'Não tem conta? Registre-se aqui!'
+                              : 'Já tem conta? Faça seu login!',
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

@@ -16,9 +16,12 @@ class ProductDetailPage extends StatelessWidget {
           Container(
             width: double.infinity,
             height: 400,
-            child: Image.network(
-              product.imageUrl,
-              fit: BoxFit.contain,
+            child: Hero(
+              tag: product.id,
+              child: Image.network(
+                product.imageUrl,
+                fit: BoxFit.contain,
+              ),
             ),
           ),
           SizedBox(height: 15),
