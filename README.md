@@ -10,7 +10,7 @@
 
 .
 
-# Flutter Shop
+# Flutter Shops
 
 This is a project developed entirely in Flutter 2.0 for study purposes only.
 

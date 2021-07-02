@@ -10,7 +10,7 @@
 
 .
 
-# Flutter Shop
+# Flutter Shops
 
 Este é um projeto desenvolvido totalmente em Flutter 2.0 com a finalidade de estudo apenas.
 
