@@ -54,6 +54,10 @@ FIREBASE_AUTH_URL='sua chave vai entre as aspas'
 FIREBASE_REALTIME_URL='a url do RealtimeDB vai aqui, entre as aspas'
 ```
 
+# Minha experiência
+
+![image](./.readme-images/my-app.gif)
+
 # Mais sobre Flutter e Dart
 
 - [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
